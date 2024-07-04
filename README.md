@@ -1,30 +1,47 @@
 # Kebab_chat
- chat across devices
+ chat across devices through local network
 
 # To run:
 
-# get you locol host by:
+## get you locol host by:
 find the one under 'en0'
-- ifconfig
 
+```
+ifconfig
+```
 
-# install node.js by
-- brew install node
+## install node.js by
 
-# Go to frontend and
-- npm install
-- npm install socket.io-client
-- npm install axios
+```
+brew install node
+```
 
-# To run frontend
-- npm start
+## Go to frontend and
 
-# Go to backend and 
-- npm install express express-fileupload socket.io
-- npm install cors
+```
+npm install
+npm install socket.io-client
+npm install axios
+```
 
-# To run backend server:
-- node server.js 
+## To run frontend
+
+```
+npm start
+```
+
+## Go to backend and 
+
+```
+npm install express express-fileupload socket.io
+npm install cors
+```
+
+## To run backend server:
+
+```
+node server.js 
+```
 
 
 
