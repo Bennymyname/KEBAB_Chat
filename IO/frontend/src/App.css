@@ -1,14 +1,27 @@
 /* General styles */
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f8f9fa;
+html, body {
+  height: 100%;
   margin: 0;
   padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa;
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* Align items to the top */
-  height: 100vh;
-  padding-top: 20px; /* Add some padding from the top */
+  align-items: flex-start;
+  box-sizing: border-box;
+}
+
+body {
+  width: 100%;
+  padding-top: 20px;
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  height: 100%;
 }
 
 .App {
@@ -16,12 +29,20 @@ body {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 700px; /* Increase the width */
-  max-width: 100%;
+  width: 90%; /* Initial width set to 90% */
+  max-width: 1200px; /* Maximum width */
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  height: 100%; /* Make sure the App takes full height */
 }
 
-/* Style for the form */
+h1 {
+  margin-bottom: 20px;
+  font-size: 2rem;
+}
+
 form {
   display: flex;
   flex-direction: column;
@@ -34,6 +55,8 @@ form input {
   border: 1px solid #ddd;
   border-radius: 4px;
   margin-bottom: 10px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 form input:focus {
@@ -51,25 +74,28 @@ form button {
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 form button:hover {
   background-color: #0056b3;
 }
 
-/* Style for chat messages */
 .chatMsg {
   text-align: left;
-  max-height: auto;
+  flex: 1;
   overflow-y: auto;
   border-top: 1px solid #ddd;
-  padding-top: 10px;
+  padding-top: 8px;
+  margin-bottom: 10px;
 }
 
 .chatMsg p {
   padding: 10px;
   border-bottom: 1px solid #ddd;
   display: flex;
+  flex-direction: column;
 }
 
 .chatMsg p:last-child {
@@ -85,5 +111,45 @@ form button:hover {
 
 .chatMsg strong {
   color: #333;
-  margin-right: 10px; /* Add some space between username and message */
+  margin-right: 10px;
+}
+
+.preview img {
+  max-width: 100%;
+  max-height: 200px;
+  margin-top: 10px;
+}
+
+.chatMsg img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+/* Responsive styles */
+@media (max-width: 1200px) {
+  .App {
+    width: 95%; /* Adjust width to 95% for smaller screens */
+  }
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  .App {
+    width: 100%; /* Adjust width to 100% for smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.6rem;
+  }
+
+  .App {
+    width: 100%; /* Use full width on very small screens */
+  }
 }
