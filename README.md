@@ -4,7 +4,7 @@
 # To run:
 
 ## get you locol host by:
-find the one under 'en0'
+find the address  under 'en0'
 
 ```
 ifconfig
