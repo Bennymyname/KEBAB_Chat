@@ -3,7 +3,8 @@ import io from 'socket.io-client';
 import axios from 'axios';
 import './App.css'; // Import the CSS file
 
-const socket = io('http://192.168.0.27:4000'); // Replace with your server's IP address
+const SERVER_IP = 'http://192.168.0.27:4000'; // Define server IP address here
+const socket = io(SERVER_IP);
 
 function App() {
   const [msg, setMsg] = useState('');
@@ -19,8 +20,9 @@ function App() {
       alert('Please enter a username');
       return;
     }
-    console.log(msg);
-    socket.emit('msg', { userName, msg });
+    const messageData = { userName, msg, timestamp: new Date().toISOString() };
+    console.log('Sending message data:', messageData); // Debug log
+    socket.emit('msg', messageData);
     setMsg('');
   };
 
@@ -35,7 +37,7 @@ function App() {
     formData.append('file', file);
 
     try {
-      const res = await axios.post('http://192.168.0.27:4000/upload', formData, {
+      const res = await axios.post(`${SERVER_IP}/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -43,7 +45,9 @@ function App() {
 
       if (res.data) {
         const { fileName, filePath } = res.data;
-        socket.emit('file-upload', { userName, fileName, filePath });
+        const fileData = { userName, fileName, filePath, timestamp: new Date().toISOString() };
+        console.log('Sending file upload data:', fileData); // Debug log
+        socket.emit('file-upload', fileData);
         setFileName('');
         setFile(null);
         setPreview(null);
@@ -75,22 +79,50 @@ function App() {
   useEffect(() => {
     // Add event listener for incoming messages
     const messageListener = (myData) => {
+      console.log('Received message data:', myData); // Debug log
       setChat((prevChat) => [...prevChat, myData]);
     };
 
     const fileListener = (fileData) => {
+      console.log('Received file data:', fileData); // Debug log
       setChat((prevChat) => [...prevChat, fileData]);
     };
 
     socket.on('msg', messageListener);
     socket.on('file-upload', fileListener);
 
+    // Load chat history
+    socket.on('history', (history) => {
+      console.log('Received chat history:', history); // Debug log
+      setChat(history);
+    });
+
     // Clean up the event listener when the component unmounts
     return () => {
       socket.off('msg', messageListener);
       socket.off('file-upload', fileListener);
+      socket.off('history');
     };
   }, []);
+
+  const formatTimestamp = (timestamp) => {
+    try {
+      if (!timestamp) return 'Invalid Date';
+      const date = new Date(timestamp);
+      return new Intl.DateTimeFormat('ja-JP', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZone: 'Asia/Tokyo'
+      }).format(date);
+    } catch (error) {
+      console.error('Error formatting timestamp:', error); // Debug log
+      return 'Invalid Date';
+    }
+  };
 
   return (
     <div className="App">
@@ -117,7 +149,7 @@ function App() {
       <form onSubmit={uploadFile} className="chat">
         <input
           type="file"
-          id="fileInput" // Add an ID to the file input
+          id="fileInput"
           onChange={handleFileChange}
         />
         <button type="submit">Upload</button>
@@ -125,16 +157,24 @@ function App() {
       <div className="chatMsg">
         {chat.map((myData, index) => (
           <p key={index}>
-            {myData.msg && <span><strong>{myData.userName}:</strong> {myData.msg}</span>}
+            {myData.msg && (
+              <>
+                <span><strong>{myData.userName}:</strong> {myData.msg}</span>
+                <span className="timestamp">{formatTimestamp(myData.timestamp)}</span>
+              </>
+            )}
             {myData.fileName && (
-              <span>
-                <strong>{myData.userName}:</strong> 
-                {myData.filePath.match(/\.(jpeg|jpg|gif|png)$/) != null ? (
-                  <img src={myData.filePath} alt={myData.fileName} style={{ maxWidth: '200px', maxHeight: '200px' }} />
-                ) : (
-                  <a href={myData.filePath} target="_blank" rel="noopener noreferrer">{myData.fileName}</a>
-                )}
-              </span>
+              <>
+                <span>
+                  <strong>{myData.userName}:</strong> 
+                  {myData.filePath.match(/\.(jpeg|jpg|gif|png)$/) != null ? (
+                    <img src={`${SERVER_IP}/${myData.fileName}`} alt={myData.fileName} style={{ maxWidth: '200px', maxHeight: '200px' }} />
+                  ) : (
+                    <a href={`${SERVER_IP}/${myData.fileName}`} target="_blank" rel="noopener noreferrer">{myData.fileName}</a>
+                  )}
+                </span>
+                <span className="timestamp">{formatTimestamp(myData.timestamp)}</span>
+              </>
             )}
           </p>
         ))}

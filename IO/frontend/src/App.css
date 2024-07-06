@@ -127,6 +127,12 @@ form button:hover {
   margin-top: 10px;
 }
 
+.timestamp {
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 5px;
+}
+
 /* Responsive styles */
 @media (max-width: 1200px) {
   .App {

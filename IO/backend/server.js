@@ -3,8 +3,8 @@ const http = require('http');
 const socketIo = require('socket.io');
 const fileUpload = require('express-fileupload');
 const path = require('path');
-const cors = require('cors'); // Import cors
-const fs = require('fs'); // Import fs
+const cors = require('cors');
+const fs = require('fs');
 
 const app = express();
 const server = http.createServer(app);
@@ -16,8 +16,10 @@ const io = socketIo(server, {
   }
 });
 
+const chatHistoryFile = path.join(__dirname, 'chatHistory.json');
+
 // Apply CORS middleware globally
-app.use(cors()); // Use cors middleware to allow cross-origin requests
+app.use(cors());
 app.use(fileUpload());
 app.use(express.static('uploads')); // Serve uploaded files
 
@@ -27,15 +29,41 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
 }
 
+// Function to load chat history from JSON file
+function loadChatHistory() {
+  let chatHistory = [];
+  if (fs.existsSync(chatHistoryFile)) {
+    try {
+      const data = fs.readFileSync(chatHistoryFile, 'utf8');
+      chatHistory = data ? JSON.parse(data) : [];
+    } catch (err) {
+      console.error('Error parsing chat history JSON:', err);
+    }
+  }
+  return chatHistory;
+}
+
 io.on('connection', (socket) => {
   console.log('Connected');
+
+  // Load and send chat history to new clients
+  const chatHistory = loadChatHistory();
+  socket.emit('history', chatHistory);
+
   socket.on('msg', (mydata) => {
-    console.log('Server received: ', mydata);
-    io.emit('msg', mydata);
+    const messageData = { ...mydata, timestamp: new Date().toISOString() };
+    const chatHistory = loadChatHistory();
+    chatHistory.push(messageData);
+    fs.writeFileSync(chatHistoryFile, JSON.stringify(chatHistory, null, 2));
+    io.emit('msg', messageData);
   });
 
   socket.on('file-upload', (fileData) => {
-    io.emit('file-upload', fileData);
+    const fileUploadData = { ...fileData, timestamp: new Date().toISOString() };
+    const chatHistory = loadChatHistory();
+    chatHistory.push(fileUploadData);
+    fs.writeFileSync(chatHistoryFile, JSON.stringify(chatHistory, null, 2));
+    io.emit('file-upload', fileUploadData);
   });
 });
 
@@ -52,8 +80,14 @@ app.post('/upload', (req, res) => {
       return res.status(500).send(err);
     }
 
-    res.json({ fileName: file.name, filePath: `http://192.168.0.27:4000/${file.name}` });
+    res.json({ fileName: file.name, filePath: `http://192.168.0.27:4000/uploads/${file.name}` });
   });
+});
+
+// Endpoint to clear chat history
+app.post('/clear-chat', (req, res) => {
+  fs.writeFileSync(chatHistoryFile, JSON.stringify([], null, 2));
+  res.send('Chat history cleared');
 });
 
 const PORT = 4000;

@@ -43,6 +43,11 @@ npm install cors
 node server.js 
 ```
 
+## Clean json historyChat by:
+
+```
+node clearChatHistory.js
+```
 
 
 
