@@ -33,10 +33,16 @@ const Chat = () => {
     socket.on('msg', messageListener);
     socket.on('file-upload', fileListener);
 
+    // Load chat history on initial load
+    socket.on('history', (history) => {
+      setChat(history);
+    });
+
     // Clean up the event listener when the component unmounts
     return () => {
       socket.off('msg', messageListener);
       socket.off('file-upload', fileListener);
+      socket.off('history');
     };
   }, []);
 
@@ -46,8 +52,8 @@ const Chat = () => {
       alert('Please enter a username');
       return;
     }
-    console.log(msg);
-    socket.emit('msg', { userName, msg });
+    const messageData = { userName, msg, timestamp: new Date().toISOString() };
+    socket.emit('msg', messageData);
     setMsg('');
   };
 
@@ -70,7 +76,8 @@ const Chat = () => {
 
       if (res.data) {
         const { fileName, filePath } = res.data;
-        socket.emit('file-upload', { userName, fileName, filePath });
+        const fileUploadData = { userName, fileName, filePath, timestamp: new Date().toISOString() };
+        socket.emit('file-upload', fileUploadData);
         setFileName('');
         setFile(null);
         setPreview(null);
@@ -140,19 +147,20 @@ const Chat = () => {
       </form>
       <div className="chatMsg">
         {chat.map((myData, index) => (
-          <p key={index}>
+          <div key={index} className="chat-message">
             {myData.msg && <span><strong>{myData.userName}:</strong> {myData.msg}</span>}
             {myData.fileName && (
               <span>
                 <strong>{myData.userName}:</strong> 
                 {myData.filePath.match(/\.(jpeg|jpg|gif|png)$/) != null ? (
-                  <img src={`${SERVER_IP}/${myData.fileName}`} alt={myData.fileName} style={{ maxWidth: '200px', maxHeight: '200px' }} />
+                  <img src={`${SERVER_IP}/uploads/${myData.fileName}`} alt={myData.fileName} style={{ maxWidth: '200px', maxHeight: '200px' }} />
                 ) : (
-                  <a href={`${SERVER_IP}/${myData.fileName}`} target="_blank" rel="noopener noreferrer">{myData.fileName}</a>
+                  <a href={`${SERVER_IP}/uploads/${myData.fileName}`} target="_blank" rel="noopener noreferrer">{myData.fileName}</a>
                 )}
               </span>
             )}
-          </p>
+            <div className="timestamp">{new Date(myData.timestamp).toLocaleString('ja-JP')}</div>
+          </div>
         ))}
       </div>
     </div>
