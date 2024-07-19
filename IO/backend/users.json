@@ -1,3 +1,26 @@
 [
-
+  {
+    "username": "Benny",
+    "password": "$2a$10$6WBLQB838ac44AJd9YU8ve0qFbrRMFx6f8/TU0/NF23NBWkDjofGO"
+  },
+  {
+    "username": "Benny2",
+    "password": "$2b$10$xgxtDddxJ/wGplLtWyR8WOJRW4Rog1q8MkK0Vgm17IngShSHfj5IO"
+  },
+  {
+    "username": "Benny4",
+    "password": "$2b$10$eUZ1A2dMVr2n64EH1lXXXelbGDuGyn5aN8KjrA9shnGADxhFV5ihO"
+  },
+  {
+    "username": "Benny3",
+    "password": "$2b$10$MTxN9dSc7q2.siT9uVDtWe/ZJ2BqaxpkEyh9L9ROuG8qnsKeQ5G4a"
+  },
+  {
+    "username": "Benny5",
+    "password": "$2b$10$xgQLJOgkqXAQVSkPqxceze/1jWg5k8uH.gmgG5DxlHCYmFGfSSnGa"
+  },
+  {
+    "username": "Benny6",
+    "password": "$2b$10$nmEm.pzJgn.gWjNRWkPAi.Zp./IO6EI2padCSM9Pelx/Nk.M36OP6"
+  }
 ]

@@ -101,6 +101,12 @@ app.post('/clear-chat', (req, res) => {
   res.send('Chat history cleared');
 });
 
+// Endpoint to fetch chat history
+app.get('/chat-history', (req, res) => {
+  const chatHistory = loadChatHistory();
+  res.json(chatHistory);
+});
+
 // User signup endpoint
 app.post('/signup', async (req, res) => {
   const { username, password } = req.body;
@@ -118,7 +124,6 @@ app.post('/signup', async (req, res) => {
   const token = jwt.sign({ username }, 'your_jwt_secret');
   res.json({ token });
 });
-
 
 // User login endpoint
 app.post('/login', async (req, res) => {
