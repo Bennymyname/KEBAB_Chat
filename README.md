@@ -24,6 +24,12 @@ npm install react-router-dom
 npm install axios
 npm install socket.io-client
 ```
+## or simply go to frontend and run 
+```
+npm install
+```
+
+
 
 ## To run frontend
 
@@ -43,6 +49,11 @@ npm install fs
 npm install bcrypt
 npm install jsonwebtoken
 
+```
+
+## or simply go to backend and run 
+```
+npm install
 ```
 
 ## To run backend server:
