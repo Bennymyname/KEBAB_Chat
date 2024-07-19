@@ -19,9 +19,10 @@ brew install node
 ## Go to frontend and
 
 ```
-npm install
-npm install socket.io-client
+npm install react react-dom
+npm install react-router-dom
 npm install axios
+npm install socket.io-client
 ```
 
 ## To run frontend
@@ -33,8 +34,12 @@ npm start
 ## Go to backend and 
 
 ```
-npm install express express-fileupload socket.io
+npm install express
+npm install http
+npm install socket.io
+npm install express-fileupload
 npm install cors
+npm install fs
 npm install bcrypt
 npm install jsonwebtoken
 
