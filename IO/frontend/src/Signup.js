@@ -1,28 +1,29 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './Signup.css';
 
 const SERVER_IP = 'http://192.168.0.27:4000';
 
-function Signup() {
+const Signup = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${SERVER_IP}/signup`, { username, password });
-      if (response.data.success) {
-        navigate('/login');
-      } else {
-        setError(response.data.message);
-      }
+      const res = await axios.post(`${SERVER_IP}/signup`, { username, password });
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('username', username);
+      navigate('/chat');
     } catch (err) {
-      console.error('Error signing up:', err);
-      setError('Error signing up.');
+      if (err.response && err.response.data && err.response.data.message) {
+        setMessage(err.response.data.message);
+      } else {
+        setMessage('User name already exists');
+      }
     }
   };
 
@@ -44,12 +45,14 @@ function Signup() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        {error && <p className="error">{error}</p>}
         <button type="submit">Sign Up</button>
       </form>
-      <p>Already have an account? <Link to="/login">Login</Link></p>
+      {message && <p className="message">{message}</p>}
+      <p>
+        Already have an account? <a href="/login">Login</a>
+      </p>
     </div>
   );
-}
+};
 
 export default Signup;
