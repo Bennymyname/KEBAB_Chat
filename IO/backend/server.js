@@ -5,23 +5,26 @@ const fileUpload = require('express-fileupload');
 const path = require('path');
 const cors = require('cors');
 const fs = require('fs');
+const bcrypt = require('bcryptjs');
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: '*', // Allow all origins for Socket.io
+    origin: '*',
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type'],
   }
 });
 
 const chatHistoryFile = path.join(__dirname, 'chatHistory.json');
+const usersFile = path.join(__dirname, 'users.json');
 
-// Apply CORS middleware globally
+// Middleware
 app.use(cors());
+app.use(express.json());
 app.use(fileUpload());
-app.use(express.static('uploads')); // Serve uploaded files
+app.use(express.static('uploads'));
 
 // Ensure the uploads directory exists
 const uploadDir = path.join(__dirname, 'uploads');
@@ -42,6 +45,62 @@ function loadChatHistory() {
   }
   return chatHistory;
 }
+
+// Function to load users from JSON file
+function loadUsers() {
+  let users = [];
+  if (fs.existsSync(usersFile)) {
+    try {
+      const data = fs.readFileSync(usersFile, 'utf8');
+      users = data ? JSON.parse(data) : [];
+    } catch (err) {
+      console.error('Error parsing users JSON:', err);
+    }
+  }
+  return users;
+}
+
+// Signup endpoint
+app.post('/signup', async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password are required' });
+  }
+
+  const users = loadUsers();
+  const existingUser = users.find((user) => user.username === username);
+  if (existingUser) {
+    return res.status(400).json({ error: 'Username already exists' });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const newUser = { username, password: hashedPassword };
+  users.push(newUser);
+
+  fs.writeFileSync(usersFile, JSON.stringify(users, null, 2));
+  res.status(201).json({ message: 'User created successfully' });
+});
+
+// Login endpoint
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password are required' });
+  }
+
+  const users = loadUsers();
+  const user = users.find((user) => user.username === username);
+  if (!user) {
+    return res.status(400).json({ error: 'Invalid username or password' });
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) {
+    return res.status(400).json({ error: 'Invalid username or password' });
+  }
+
+  res.status(200).json({ message: 'Login successful' });
+});
 
 io.on('connection', (socket) => {
   console.log('Connected');
@@ -80,7 +139,7 @@ app.post('/upload', (req, res) => {
       return res.status(500).send(err);
     }
 
-    res.json({ fileName: file.name, filePath: `http://192.168.0.27:4000/uploads/${file.name}` });
+    res.json({ fileName: file.name, filePath: `${SERVER_IP}/uploads/${file.name}` });
   });
 });
 

@@ -35,6 +35,9 @@ npm start
 ```
 npm install express express-fileupload socket.io
 npm install cors
+npm install bcrypt
+npm install jsonwebtoken
+
 ```
 
 ## To run backend server:
