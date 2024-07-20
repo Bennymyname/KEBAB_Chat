@@ -31,26 +31,30 @@ const Signup = () => {
     <div className="signup-container">
       <h2>Sign Up</h2>
       <form onSubmit={handleSubmit}>
+        <label htmlFor="username">Username</label>
         <input
           type="text"
+          id="username"
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
         />
+        <label htmlFor="password">Password</label>
         <input
           type="password"
+          id="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
         <button type="submit">Sign Up</button>
+        {message && <p className="error">{message}</p>}
+        <p className="signup-text">
+          Already have an account? <a href="/login">Login</a>
+        </p>
       </form>
-      {message && <p className="message">{message}</p>}
-      <p>
-        Already have an account? <a href="/login">Login</a>
-      </p>
     </div>
   );
 };
