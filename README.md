@@ -51,7 +51,7 @@ npm install jsonwebtoken
 
 ```
 
-## or simply go to backend and run 
+## or simply go to backend and run: 
 ```
 npm install
 ```
