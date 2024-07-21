@@ -1,9 +1,9 @@
+const cors = require('cors');
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const fileUpload = require('express-fileupload');
 const path = require('path');
-const cors = require('cors');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -12,7 +12,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: '*',
+    origin: '*', // Allow requests from any origin
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type'],
   }
@@ -144,6 +144,6 @@ app.post('/login', async (req, res) => {
 });
 
 const PORT = 4000;
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`Listening to port ${PORT}`);
 });

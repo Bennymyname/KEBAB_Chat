@@ -4,8 +4,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Chat.css';
 
-const SERVER_IP = 'http://192.168.0.27:4000';
+const SERVER_IP = 'http://192.168.0.27:4000'; // Update this to your backend server IP
 const socket = io(SERVER_IP);
+
 const getDate = function () {
     const date = new Date();
     const hours = date.getHours();
