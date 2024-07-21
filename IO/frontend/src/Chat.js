@@ -4,172 +4,130 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Chat.css';
 
-const SERVER_IP = 'http://192.168.0.27:4000';
+const SERVER_IP = 'http://127.0.0.1:4000';
 const socket = io(SERVER_IP);
+const getDate = function () {
+    const date = new Date();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const fomattedTime = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+    return fomattedTime;
+}
 
 const Chat = () => {
-  const [msg, setMsg] = useState('');
-  const [userName, setUserName] = useState('');
-  const [chat, setChat] = useState([]);
-  const [file, setFile] = useState(null);
-  const [fileName, setFileName] = useState('');
-  const [preview, setPreview] = useState(null);
-  const navigate = useNavigate();
+    const [msg, setMsg] = useState(''); // 定义消息状态
+    const [file, setFile] = useState(null); // 定义文件状态
+    const [chat, setChat] = useState([]); // 定义聊天记录状态
+    const [nickname, setNickname] = useState(''); // 定义昵称状态
+    const navigate = useNavigate(); // 用于导航
 
-  useEffect(() => {
-    // Load username from local storage or set default
-    const storedUserName = localStorage.getItem('username') || 'Guest';
-    setUserName(storedUserName);
+    useEffect(() => {
+        const storedUserName = localStorage.getItem('username') || 'Guest'; // 获取存储的用户名
+        setNickname(storedUserName); // 设置昵称为用户名
 
-    // Fetch chat history
-    const fetchChatHistory = async () => {
-      try {
-        const response = await axios.get(`${SERVER_IP}/chat-history`);
-        setChat(response.data);
-      } catch (err) {
-        console.error('Error fetching chat history:', err);
-      }
+        const fetchChatHistory = async () => {
+            try {
+                const response = await axios.get(`${SERVER_IP}/chat-history`); // 获取聊天记录
+                setChat(response.data); // 设置聊天记录状态
+            } catch (err) {
+                console.error('Error fetching chat history:', err);
+            }
+        };
+
+        fetchChatHistory(); // 调用获取聊天记录函数
+
+        socket.on('msg', (myData) => {
+            setChat((prevChat) => [...prevChat, myData]); // 监听消息事件并更新聊天记录
+        });
+
+        return () => {
+            socket.off('msg'); // 清除消息监听
+        };
+    }, []);
+
+    const send = (e) => {
+        e.preventDefault();
+        const messageData = { userName: nickname, msg, sender: true, date_time: getDate() }; // 构建消息对象
+        socket.emit('msg', messageData); // 发送消息
+        setMsg(''); // 清空消息输入框
     };
 
-    fetchChatHistory();
-
-    // Add event listener for incoming messages
-    const messageListener = (myData) => {
-      setChat((prevChat) => [...prevChat, myData]);
+    const handleFileChange = (e) => {
+        setFile(e.target.files[0]); // 设置文件状态
     };
 
-    const fileListener = (fileData) => {
-      setChat((prevChat) => [...prevChat, fileData]);
-    };
-
-    socket.on('msg', messageListener);
-    socket.on('file-upload', fileListener);
-
-    // Clean up the event listener when the component unmounts
-    return () => {
-      socket.off('msg', messageListener);
-      socket.off('file-upload', fileListener);
-    };
-  }, []);
-
-  const send = (e) => {
-    e.preventDefault();
-    if (!userName) {
-      alert('Please enter a username');
-      return;
-    }
-    console.log(msg);
-    socket.emit('msg', { userName, msg });
-    setMsg('');
-  };
-
-  const uploadFile = async (e) => {
-    e.preventDefault();
-    if (!file) {
-      alert('Please select a file to upload');
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      const res = await axios.post(`${SERVER_IP}/upload`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+    const uploadFile = (e) => {
+        e.preventDefault();
+        if (!file) {
+            alert('Please select a file to upload'); // 如果没有选择文件，显示提示
+            return;
         }
-      });
+        const formData = new FormData();
+        formData.append('file', file); // 将文件添加到表单数据中
+        axios.post(`${SERVER_IP}/upload`, formData).then(response => {
+            const { fileName, filePath } = response.data;
+            socket.emit('file-upload', { userName: nickname, fileName, filePath }); // 发送文件上传事件
+            setFile(null); // 清空文件状态
+        }).catch(err => {
+            console.error('Error uploading file:', err);
+        });
+    };
 
-      if (res.data) {
-        const { fileName, filePath } = res.data;
-        socket.emit('file-upload', { userName, fileName, filePath });
-        setFileName('');
-        setFile(null);
-        setPreview(null);
-        document.getElementById('fileInput').value = null; // Reset file input
-      } else {
-        console.error('No response data');
-      }
-    } catch (err) {
-      console.error('Error uploading file:', err);
-      if (err.response) {
-        console.error('Response error:', err.response.data);
-      }
-    }
-  };
+    const handleLogout = () => {
+        localStorage.removeItem('username'); // 移除存储的用户名
+        navigate('/login'); // 导航到登录页面
+    };
 
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    setFile(selectedFile);
-    setFileName(selectedFile.name);
+    const updateNickname = () => {
+        const newNickname = prompt('Enter your new nickname:', nickname); // 提示输入新昵称
+        if (newNickname) setNickname(newNickname); // 设置新昵称
+    };
 
-    if (selectedFile && selectedFile.type.startsWith('image/')) {
-      const previewUrl = URL.createObjectURL(selectedFile);
-      setPreview(previewUrl);
-    } else {
-      setPreview(null);
-    }
-  };
+    return (
+        <div className="App">
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    navigate('/login');
-  };
+            <div className="header">
+                <div className="nickname-section">
+                    Nickname: <button onClick={updateNickname} className="nickname-edit">{nickname}</button>
+                </div>
+                <button onClick={handleLogout} className="logout-button">Log out</button>
+            </div>
+            <div className='contain'>
+                <div className='contain-main'>
+                    <div className="chatMsg">
+                        {chat.map((myData, index) => (
+                            <div key={index} className={myData.sender ? 'sender' : 'receiver'}>
+                                <strong className='chat-strong'>{myData.userName}</strong>
+                                <div className='chat-send-p'>{myData.msg}</div>
+                                <div className='time'>{myData.date_time}</div>
+                            </div>
+                        ))}
+                    </div>
+                    <div onSubmit={send} className='chat-form'>
+                        <input
+                            type="text"
+                            placeholder="Type your message here"
+                            value={msg}
+                            onChange={(e) => setMsg(e.target.value)}
+                            required
+                            className='chat-input'
+                        />
+                        <input
+                            type="file"
+                            id="fileInput"
+                            onChange={handleFileChange}
+                            className='chat-file'
+                        />
+                        <label htmlFor="fileInput" className="file-label">File</label>
+                        <button type="submit" className='chat-send'>Send</button>
+                    </div>
+                </div>
 
-  return (
-    <div className="App">
-      <div className="header">
-        <h1>Chat program using Socket.io</h1>
-        <button onClick={handleLogout} className="logout-button">Logout</button>
-      </div>
-      <form onSubmit={send} className="chat">
-        <input
-          type="text"
-          required
-          placeholder="Username here..."
-          name="username"
-          value={userName}
-          onChange={(e) => setUserName(e.target.value)}
-        />
-        <input
-          type="text"
-          required
-          placeholder="Message here..."
-          name="msg"
-          value={msg}
-          onChange={(e) => setMsg(e.target.value)}
-        />
-        <button type="submit">Send</button>
-      </form>
-      <form onSubmit={uploadFile} className="chat">
-        <input
-          type="file"
-          id="fileInput"
-          onChange={handleFileChange}
-        />
-        <button type="submit">Upload</button>
-      </form>
-      <div className="chatMsg">
-        {chat.map((myData, index) => (
-          <p key={index}>
-            {myData.timestamp && <span>{new Date(myData.timestamp).toLocaleString()}</span>}
-            {myData.msg && <span><strong>{myData.userName}:</strong> {myData.msg}</span>}
-            {myData.fileName && (
-              <span>
-                <strong>{myData.userName}:</strong> 
-                {myData.filePath.match(/\.(jpeg|jpg|gif|png)$/) != null ? (
-                  <img src={`${SERVER_IP}/${myData.fileName}`} alt={myData.fileName} style={{ maxWidth: '200px', maxHeight: '200px' }} />
-                ) : (
-                  <a href={`${SERVER_IP}/${myData.fileName}`} target="_blank" rel="noopener noreferrer">{myData.fileName}</a>
-                )}
-              </span>
-            )}
-          </p>
-        ))}
-      </div>
-    </div>
-  );
+            </div>
+
+
+        </div>
+    );
 };
 
 export default Chat;
