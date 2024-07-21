@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Signup.css';
 
-const SERVER_IP = 'http://192.168.0.27:4000';
+const SERVER_IP = 'http://127.0.0.1:4000';
 
 const Signup = () => {
   const [username, setUsername] = useState('');
@@ -31,7 +31,7 @@ const Signup = () => {
     <div className="signup-container">
       <h2>Sign Up</h2>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="username">Username</label>
+        <label className='sign-label' htmlFor="username">Username</label>
         <input
           type="text"
           id="username"
@@ -40,7 +40,7 @@ const Signup = () => {
           onChange={(e) => setUsername(e.target.value)}
           required
         />
-        <label htmlFor="password">Password</label>
+        <label className='sign-label' htmlFor="password">Password</label>
         <input
           type="password"
           id="password"
