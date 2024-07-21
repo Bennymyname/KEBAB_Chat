@@ -4,9 +4,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Chat.css';
 
-const SERVER_IP = 'http://192.168.0.27:4000'; // Update this to your backend server IP
+const SERVER_IP = 'http://192.168.0.27:4000';
 const socket = io(SERVER_IP);
-
 const getDate = function () {
     const date = new Date();
     const hours = date.getHours();
@@ -18,11 +17,10 @@ const getDate = function () {
 const Chat = () => {
     const [msg, setMsg] = useState('');
     const [file, setFile] = useState(null);
-    const [fileName, setFileName] = useState('');
     const [chat, setChat] = useState([]);
     const [nickname, setNickname] = useState('');
     const navigate = useNavigate();
-    const chatEndRef = useRef(null);
+    const chatBoxRef = useRef(null);
 
     useEffect(() => {
         const storedUserName = localStorage.getItem('username') || 'Guest';
@@ -32,7 +30,6 @@ const Chat = () => {
             try {
                 const response = await axios.get(`${SERVER_IP}/chat-history`);
                 setChat(response.data);
-                scrollToBottom();
             } catch (err) {
                 console.error('Error fetching chat history:', err);
             }
@@ -42,10 +39,12 @@ const Chat = () => {
 
         socket.on('msg', (myData) => {
             setChat((prevChat) => [...prevChat, myData]);
+            scrollToBottom();
         });
 
         socket.on('file-upload', (fileData) => {
             setChat((prevChat) => [...prevChat, fileData]);
+            scrollToBottom();
         });
 
         return () => {
@@ -53,10 +52,6 @@ const Chat = () => {
             socket.off('file-upload');
         };
     }, []);
-
-    useEffect(() => {
-        scrollToBottom();
-    }, [chat]);
 
     const send = (e) => {
         e.preventDefault();
@@ -67,7 +62,6 @@ const Chat = () => {
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
-        setFileName(e.target.files[0].name);
     };
 
     const uploadFile = async (e) => {
@@ -88,17 +82,10 @@ const Chat = () => {
             const fileData = { userName: nickname, fileName, filePath, sender: true, date_time: getDate() };
             socket.emit('file-upload', fileData);
             setFile(null);
-            setFileName('');
             document.getElementById('fileInput').value = null;
         } catch (err) {
             console.error('Error uploading file:', err);
         }
-    };
-
-    const deleteFile = () => {
-        setFile(null);
-        setFileName('');
-        document.getElementById('fileInput').value = null;
     };
 
     const handleLogout = () => {
@@ -112,10 +99,14 @@ const Chat = () => {
     };
 
     const scrollToBottom = () => {
-        if (chatEndRef.current) {
-            chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        if (chatBoxRef.current) {
+            chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
         }
     };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [chat]);
 
     return (
         <div className="App">
@@ -127,9 +118,9 @@ const Chat = () => {
             </div>
             <div className='contain'>
                 <div className='contain-main'>
-                    <div className="chatMsg">
+                    <div className="chatMsg" ref={chatBoxRef}>
                         {chat.map((myData, index) => (
-                            <div key={index} className={myData.sender ? 'sender' : 'receiver'}>
+                            <div key={index} className={myData.userName === nickname ? 'sender' : 'receiver'}>
                                 <strong className='chat-strong'>{myData.userName}</strong>
                                 {myData.msg && <div className='chat-send-p'>{myData.msg}</div>}
                                 {myData.filePath && (
@@ -142,10 +133,9 @@ const Chat = () => {
                                 <div className='time'>{myData.date_time}</div>
                             </div>
                         ))}
-                        <div ref={chatEndRef} />
                     </div>
                     <form onSubmit={send} className='chat-form'>
-                        <div className='input-row'>
+                        <div className="input-row">
                             <input
                                 type="text"
                                 placeholder="Type your message here"
@@ -156,21 +146,23 @@ const Chat = () => {
                             />
                             <button type="submit" className='chat-send'>Send</button>
                         </div>
-                        <div className='input-row'>
+                        <div className="input-row">
+                            <label htmlFor="fileInput" className="file-label">File</label>
                             <input
                                 type="file"
                                 id="fileInput"
                                 onChange={handleFileChange}
                                 className='chat-file'
                             />
-                            <label htmlFor="fileInput" className="file-label">File</label>
-                            {fileName && (
-                                <div className='file-info'>
-                                    <span>{fileName}</span>
-                                    <button onClick={deleteFile} className='delete-file'>Delete</button>
+                            {file && (
+                                <div className="file-info">
+                                    <span>{file.name}</span>
+                                    <button onClick={() => setFile(null)} className='delete-file'>Remove</button>
                                 </div>
                             )}
+
                             <button onClick={uploadFile} className='chat-upload'>Upload File</button>
+                            
                         </div>
                     </form>
                 </div>

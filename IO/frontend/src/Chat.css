@@ -25,7 +25,6 @@ html, body {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  height: 100%;
   overflow: hidden;
 }
 
@@ -33,11 +32,11 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(to right, #478bd5, #a872ba);
+  background: linear-gradient(to right,#478bd5,#a872ba);
   color: white;
   padding: 10px 20px;
   width: 100%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   border-radius: 8px 8px 0 0;
 }
 
@@ -46,7 +45,6 @@ html, body {
   align-items: center;
   font-size: 24px;
   font-weight: 700;
-  margin-left: 180px;
 }
 
 .nickname-edit {
@@ -56,9 +54,9 @@ html, body {
   color: #553bd8;
   margin-left: 10px;
   font-size: 16px;
-  width: 140px;
+  width: auto;
   cursor: pointer;
-  padding: 20px;
+  padding: 10px;
   margin-top: -1px;
 }
 
@@ -71,8 +69,8 @@ html, body {
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
-  width: 90px;
-  margin-right: 30px;
+  width: auto;
+  margin-right: 25px;
   margin-top: -2px;
   background: linear-gradient(to bottom, #fff 0%, #82b2e5 100%);
   transition: background-color 0.3s ease;
@@ -93,11 +91,10 @@ html, body {
 }
 
 .contain-main {
-  width: 60%;
-  height: 80%;
+  width: 90%;
+  height: 90%;
   display: flex;
-  flex-wrap: wrap;
-  margin-bottom: 40px;
+  flex-direction: column;
   background: #fff;
   border-radius: 30px;
   padding: 2%;
@@ -116,7 +113,6 @@ html, body {
   padding: 8px 20px;
   flex-grow: 1;
   width: auto;
-  height: 700px;
   border-top: none!important;
 }
 
@@ -166,8 +162,9 @@ html, body {
   width: 100%;
   height: auto;
   border: 1px solid #ccc;
-  padding: 8px; /* Add padding */
-  margin-top: auto; /* Push form to the bottom */
+  padding: 8px;
+  margin-top: auto;
+  margin-bottom: 40px;
 }
 
 .input-row {
@@ -189,7 +186,7 @@ html, body {
 }
 
 .file-label {
-  width: 50px;
+  width: auto;
   height: 25px;
   border-radius: 5px;
   margin-top: 0;
@@ -202,7 +199,7 @@ html, body {
 
 .chat-send {
   border: none;
-  width: 60px;
+  width: auto;
   margin-top: 0;
   display: flex;
   align-items: center;
@@ -255,6 +252,20 @@ input[type="file"] {
   background-color: darkred;
 }
 
+.chat-upload {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  width: 100%; /* Make button full width */
+}
+
+.file-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%; /* Ensure container is full width */
+}
+
 /* Responsive styles */
 @media (max-width: 768px) {
   .nickname-section {
@@ -275,8 +286,8 @@ input[type="file"] {
   }
 
   .contain-main {
-    width: 90%;
-    height: 90%;
+    width: 95%;
+    height: 95%;
     padding: 1%;
     margin-bottom: 20px;
   }
