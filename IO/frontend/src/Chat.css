@@ -33,11 +33,11 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(to right,#478bd5,#a872ba);
+  background: linear-gradient(to right, #478bd5, #a872ba);
   color: white;
   padding: 10px 20px;
   width: 100%;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   border-radius: 8px 8px 0 0;
 }
 
@@ -253,4 +253,64 @@ input[type="file"] {
 
 .delete-file:hover {
   background-color: darkred;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .nickname-section {
+    margin-left: 0;
+    font-size: 20px;
+  }
+
+  .nickname-edit {
+    font-size: 14px;
+    padding: 10px;
+    width: auto;
+  }
+
+  .logout-button {
+    font-size: 14px;
+    padding: 6px 12px;
+    margin-right: 10px;
+  }
+
+  .contain-main {
+    width: 90%;
+    height: 90%;
+    padding: 1%;
+    margin-bottom: 20px;
+  }
+
+  .chatMsg {
+    height: 60vh;
+    padding: 5px 10px;
+  }
+
+  .chat-form {
+    padding: 5px;
+    border-radius: 10px;
+  }
+
+  .chat-input {
+    font-size: 12px;
+    padding: 5px 8px;
+    border-radius: 10px;
+  }
+
+  .chat-send, .file-label, .delete-file {
+    font-size: 12px;
+    padding: 5px 8px;
+    border-radius: 10px;
+  }
+
+  .input-row {
+    flex-direction: column;
+    align-items: stretch;
+    margin-bottom: 5px;
+  }
+
+  .file-info {
+    margin-left: 0;
+    margin-top: 5px;
+  }
 }
