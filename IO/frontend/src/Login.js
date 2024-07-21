@@ -19,6 +19,7 @@ const Login = () => {
       setSuccess('Login successful');
       setError('');
       localStorage.setItem('token', res.data.token);
+      localStorage.setItem('username', username); // Store username in localStorage
       navigate('/chat');
     } catch (err) {
       setError('Invalid username or password');

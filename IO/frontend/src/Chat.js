@@ -155,15 +155,14 @@ const Chat = () => {
                                 className='chat-file'
                             />
                             {file && (
-                                <div className="file-info">
-                                    <span>{file.name}</span>
-                                    <button onClick={() => setFile(null)} className='delete-file'>Remove</button>
-                                </div>
-                            )}
-
+                            <div className="file-info">
+                                <span>{file.name}</span>
+                                <button onClick={() => setFile(null)} className='delete-file'>Remove</button>
+                            </div>
+                        )}
                             <button onClick={uploadFile} className='chat-upload'>Upload File</button>
-                            
                         </div>
+                        
                     </form>
                 </div>
             </div>
