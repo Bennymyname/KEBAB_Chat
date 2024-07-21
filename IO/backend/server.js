@@ -1,4 +1,3 @@
-const cors = require('cors');
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -7,6 +6,9 @@ const path = require('path');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
+
+const SERVER_IP = 'http://192.168.0.27:4000';
 
 const app = express();
 const server = http.createServer(app);
@@ -31,7 +33,7 @@ if (fs.existsSync(usersFile)) {
 // Apply CORS middleware globally
 app.use(cors());
 app.use(fileUpload());
-app.use(express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
 
 // Ensure the uploads directory exists
@@ -84,14 +86,14 @@ app.post('/upload', (req, res) => {
   }
 
   let file = req.files.file;
-  let uploadPath = path.join(__dirname, 'uploads', file.name);
+  let uploadPath = path.join(uploadDir, file.name);
 
   file.mv(uploadPath, (err) => {
     if (err) {
       return res.status(500).send(err);
     }
 
-    res.json({ fileName: file.name, filePath: `${SERVER_IP}/uploads/${file.name}` });
+    res.json({ fileName: file.name, filePath: `${SERVER_IP}/uploads/${encodeURIComponent(file.name)}` });
   });
 });
 
