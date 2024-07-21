@@ -62,8 +62,6 @@ html, body {
   margin-top: -1px;
 }
 
-
-
 .logout-button {
   background-color: #ffffff;
   color: #007bff;
@@ -79,11 +77,13 @@ html, body {
   background: linear-gradient(to bottom, #fff 0%, #82b2e5 100%);
   transition: background-color 0.3s ease;
 }
-.time{
+
+.time {
   margin-top: 5px;
   color: #000;
 }
-.contain{
+
+.contain {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -91,7 +91,8 @@ html, body {
   height: 100%;
   background: linear-gradient(to bottom, #e1b1e6, #55adda);
 }
-.contain-main{
+
+.contain-main {
   width: 60%;
   height: 80%;
   display: flex;
@@ -100,7 +101,9 @@ html, body {
   background: #fff;
   border-radius: 30px;
   padding: 2%;
+  overflow: hidden; /* Ensure no overflow */
 }
+
 .logout-button:hover {
   background-color: #0056b3;
   color: white;
@@ -113,9 +116,10 @@ html, body {
   padding: 8px 20px;
   flex-grow: 1;
   width: auto;
-  height: 380px;
+  height: 700px;
   border-top: none!important;
 }
+
 .chatMsg p {
   padding: 10px 15px;
   border-radius: 12px;
@@ -128,7 +132,8 @@ html, body {
   align-self: flex-start;
   margin-top: 15px;
 }
-.receiver .chat-send-p{
+
+.receiver .chat-send-p {
   background: #eeeeee;
   padding: 10px;
   text-align: center;
@@ -141,10 +146,12 @@ html, body {
   text-align: right;
   margin-top: 15px;
 }
-.sender .chat-strong{
+
+.sender .chat-strong {
   margin-right: 0!important;
 }
-.sender .chat-send-p{
+
+.sender .chat-send-p {
   background: #3e3eca;
   padding: 10px;
   text-align: center;
@@ -153,14 +160,21 @@ html, body {
 
 .chat-form {
   display: flex;
-  align-items: center;
-  padding: 8px;
+  flex-direction: column;
   background-color: #f8f9fa;
   border-radius: 20px;
-  margin-top: 10px;
-  width: 95%;
+  width: 100%;
+  height: auto;
   border: 1px solid #ccc;
-  height: 40px;
+  padding: 8px; /* Add padding */
+  margin-top: auto; /* Push form to the bottom */
+}
+
+.input-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 /* 输入框 */
@@ -173,7 +187,8 @@ html, body {
   max-height: 50px;
   margin-bottom: 0;
 }
-.file-label{
+
+.file-label {
   width: 50px;
   height: 25px;
   border-radius: 5px;
@@ -184,7 +199,8 @@ html, body {
   margin-bottom: 0;
   background: #ebe9ee!important;
 }
-.chat-send{
+
+.chat-send {
   border: none;
   width: 60px;
   margin-top: 0;
@@ -204,7 +220,7 @@ button, label {
   margin-left: 5px; /* 左边距 */
   margin-bottom: 0;
   display: flex;
-  align-items: center;    
+  align-items: center;
 }
 
 button:hover, label:hover {
@@ -213,4 +229,28 @@ button:hover, label:hover {
 
 input[type="file"] {
   display: none;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.file-info span {
+  margin-right: 10px;
+}
+
+.delete-file {
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.delete-file:hover {
+  background-color: darkred;
 }

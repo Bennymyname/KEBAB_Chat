@@ -91,7 +91,7 @@ app.post('/upload', (req, res) => {
       return res.status(500).send(err);
     }
 
-    res.json({ fileName: file.name, filePath: `http://192.168.0.27:4000/uploads/${file.name}` });
+    res.json({ fileName: file.name, filePath: `${SERVER_IP}/uploads/${file.name}` });
   });
 });
 
