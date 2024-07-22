@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Chat.css';
 
-const SERVER_IP = 'http://192.168.0.27:4000';
+const SERVER_IP = 'http://172.30.224.133:4000';
 const socket = io(SERVER_IP);
 const getDate = function () {
     const date = new Date();

@@ -8,7 +8,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 
-const SERVER_IP = 'http://192.168.0.27:4000';
+const SERVER_IP = 'http://172.30.224.133:4000';
 
 const app = express();
 const server = http.createServer(app);
